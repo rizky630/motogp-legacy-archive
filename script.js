@@ -354,6 +354,8 @@ function getArchiveDetails(category, item) {
 // ==================================================
 
 function renderArchiveData(category, data) {
+    modalDescription.textContent =
+    archiveConfig[category].description;
     let container = document.getElementById("archiveResults");
 
     if (!container) {
