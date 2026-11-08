@@ -1,0 +1,184 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="MotoGP Legacy Archive - menjelajahi sejarah, pembalap, motor, dan sirkuit MotoGP.">
+  <title>MotoGP Legacy Archive</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="navbar">
+    <a class="brand" href="#home">
+      <span class="brand-mark">M</span>
+      <span>MOTOGP <b>LEGACY</b></span>
+    </a>
+
+    <button class="menu-toggle" id="menuToggle" aria-label="Buka navigasi">☰</button>
+
+    <nav class="nav-links" id="navLinks">
+      <a href="#home">Beranda</a>
+      <a href="#archives">Jelajahi</a>
+      <a href="#timeline">Sejarah</a>
+      <a href="#about">Tentang</a>
+    </nav>
+
+    <a class="nav-cta" href="#archives">EXPLORE ARCHIVE ↗</a>
+  </header>
+
+  <main>
+    <section class="hero" id="home">
+      <div class="hero-shade"></div>
+      <div class="hero-content">
+        <p class="eyebrow"><span></span> THE HISTORY OF MOTORCYCLE RACING</p>
+        <h1>BEYOND<br>THE <em>LIMIT.</em></h1>
+        <p class="hero-description">
+          Menelusuri perjalanan sejarah, legenda pembalap,
+          perkembangan teknologi, dan sirkuit dalam dunia
+          balap motor paling bergengsi.
+        </p>
+        <div class="hero-buttons">
+          <a class="button button-red" href="#archives">JELAJAHI ARSIP ↗</a>
+          <a class="button button-outline" href="#timeline">PELAJARI SEJARAH</a>
+        </div>
+        <div class="hero-footnote">
+          <span>EST. 1949</span><span class="footnote-line"></span>
+          <span>RACING HERITAGE ARCHIVE</span>
+        </div>
+      </div>
+      <div class="hero-vertical">MOTORSPORT LEGACY</div>
+      <div class="hero-index">01 <span>/ 04</span></div>
+    </section>
+
+    <section class="stats">
+      <div class="stat">
+        <strong>1949</strong>
+        <span>AWAL KEJUARAAN DUNIA</span>
+      </div>
+      <div class="stat">
+        <strong>75+</strong>
+        <span>TAHUN PERJALANAN</span>
+      </div>
+      <div class="stat">
+        <strong>LEGENDS</strong>
+        <span>PEMBALAP IKONIK</span>
+      </div>
+      <div class="stat">
+        <strong>WORLD</strong>
+        <span>RACING HERITAGE</span>
+      </div>
+    </section>
+
+    <section class="section archives" id="archives">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">DISCOVER THE LEGACY</p>
+          <h2>EXPLORE <em>ARCHIVE.</em></h2>
+        </div>
+        <p class="section-intro">
+          Jelajahi berbagai koleksi informasi tentang perjalanan
+          MotoGP, dari sejarah awal hingga teknologi balap modern.
+        </p>
+      </div>
+
+      <div class="archive-grid">
+        <article class="archive-card">
+          <img src="https://images.unsplash.com/photo-1558981806-ec527fa84c39?auto=format&fit=crop&w=1200&q=85" alt="Sepeda motor klasik">
+          <div class="card-shade"></div>
+          <div class="card-content">
+            <span class="card-label">01 / HISTORY</span>
+            <h3>SEJARAH MOTOGP</h3>
+            <p>Perjalanan kejuaraan dunia balap motor sejak 1949.</p>
+            <button data-category="history">EXPLORE MORE <span>↗</span></button>
+          </div>
+        </article>
+
+        <article class="archive-card">
+          <img src="https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=1200&q=85" alt="Motor dan teknologi">
+          <div class="card-shade"></div>
+          <div class="card-content">
+            <span class="card-label">02 / TECHNOLOGY</span>
+            <h3>MOTOR & TEKNOLOGI</h3>
+            <p>Evolusi mesin, aerodinamika, dan teknologi balap.</p>
+            <button data-category="technology">EXPLORE MORE <span>↗</span></button>
+          </div>
+        </article>
+
+        <article class="archive-card">
+          <img src="https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&w=1200&q=85" alt="Dunia sepeda motor">
+          <div class="card-shade"></div>
+          <div class="card-content">
+            <span class="card-label">03 / RIDERS</span>
+            <h3>PEMBALAP LEGENDA</h3>
+            <p>Kisah para pembalap yang meninggalkan jejak sejarah.</p>
+            <button data-category="riders">EXPLORE MORE <span>↗</span></button>
+          </div>
+        </article>
+
+        <article class="archive-card">
+          <img src="https://images.unsplash.com/photo-1519608487953-e999c86e7455?auto=format&fit=crop&w=1200&q=85" alt="Pemandangan lintasan">
+          <div class="card-shade"></div>
+          <div class="card-content">
+            <span class="card-label">04 / CIRCUITS</span>
+            <h3>SIRKUIT DUNIA</h3>
+            <p>Mengenal lintasan ikonik tempat sejarah balap tercipta.</p>
+            <button data-category="circuits">EXPLORE MORE <span>↗</span></button>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="timeline-section" id="timeline">
+      <div class="timeline-image"></div>
+      <div class="timeline-content">
+        <p class="eyebrow">A LEGACY THAT NEVER ENDS</p>
+        <h2>EVERY LEGEND<br>HAS A <em>STORY.</em></h2>
+        <p>
+          Lebih dari sekadar kecepatan. MotoGP adalah perjalanan
+          tentang keberanian, inovasi, persaingan, dan sejarah
+          yang terus berkembang dari generasi ke generasi.
+        </p>
+        <a href="#archives" class="button button-red">DISCOVER THE STORY ↗</a>
+      </div>
+    </section>
+
+    <section class="about section" id="about">
+      <p class="eyebrow">ABOUT THIS PROJECT</p>
+      <h2>MOTOGP <em>LEGACY ARCHIVE</em></h2>
+      <p>
+        MotoGP Legacy Archive merupakan proyek arsip digital
+        independen yang menyajikan informasi mengenai sejarah
+        MotoGP, perkembangan teknologi motor balap, pembalap
+        legendaris, dan sirkuit dunia sebagai media informasi
+        dan pembelajaran.
+      </p>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <a class="brand" href="#home">
+      <span class="brand-mark">M</span>
+      <span>MOTOGP <b>LEGACY</b></span>
+    </a>
+    <p>© 2026 MotoGP Legacy Archive. Independent educational project.</p>
+  </footer>
+
+  <div class="modal" id="categoryModal" aria-hidden="true">
+    <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <button class="modal-close" id="modalClose" aria-label="Tutup">×</button>
+      <p class="eyebrow">ARCHIVE COLLECTION</p>
+      <h2 id="modalTitle">ARCHIVE</h2>
+      <p id="modalDescription"></p>
+      <button class="button button-red" id="modalOkay">CLOSE WINDOW</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="script.js"></script>
+</body>
+</html>
