@@ -1,771 +1,531 @@
 
-// ======================================================
-// MOTOGP LEGACY ARCHIVE
-// JAVASCRIPT UTAMA + SUPABASE DATABASE
-// ======================================================
-
 (() => {
-    "use strict";
+  "use strict";
 
-    // ==================================================
-    // 1. KONFIGURASI SUPABASE
-    // ==================================================
+  // ==========================================
+  // KONFIGURASI SUPABASE
+  // ==========================================
 
-    const SUPABASE_URL = "https://hhfksogwcuezjyviygkb.supabase.co";
+  const SUPABASE_URL = "https://hhfksogwcuezjyviygkb.supabase.co";
 
-    const SUPABASE_ANON_KEY =
-        "sb_publishable_0bIZlUdcS98fY-xefsmSzA_d235gVHt";
+  const SUPABASE_KEY =
+    "sb_publishable_0bIZlUdcS98fY-xefsmSzA_d235gVHt";
 
-    let supabaseClient = null;
+  const supabase = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
 
-    // ==================================================
-    // 2. KONFIGURASI KATEGORI ARSIP
-    // ==================================================
+  // ==========================================
+  // KONFIGURASI ARSIP
+  // Nama tabel dan kolom dipertahankan
+  // ==========================================
 
-    const archiveConfig = {
-        history: {
-            title: "SEJARAH MOTOGP",
-            table: "motogp_history",
-            description:
-                "Menjelajahi perjalanan sejarah Grand Prix hingga era MotoGP modern.",
-            fields: [
-                "id",
-                "title",
-                "era",
-                "year_start",
-                "year_end",
-                "description",
-                "image_url",
-                "sort_order"
-            ],
-            orderBy: "sort_order"
-        },
+  const archiveConfig = {
+    history: {
+      title: "Sejarah MotoGP",
+      description:
+        "Jelajahi perjalanan panjang kejuaraan balap motor dunia dari masa ke masa.",
+      table: "motogp_history",
+      fields: [
+        "id",
+        "title",
+        "era",
+        "year_start",
+        "year_end",
+        "description",
+        "image_url",
+        "sort_order"
+      ],
+      orderBy: "sort_order",
+      ascending: true
+    },
 
-        technology: {
-            title: "MOTOR & TEKNOLOGI",
-            table: "motogp_motorcycles",
-            description:
-                "Mengenal motor legendaris dan perkembangan teknologi balap MotoGP.",
-            fields: [
-                "id",
-                "manufacturer",
-                "model",
-                "year",
-                "engine",
-                "technology",
-                "description",
-                "image_url",
-                "source_url"
-            ],
-            orderBy: "year"
-        },
+    technology: {
+      title: "Motor dan Teknologi",
+      description:
+        "Kenali perkembangan motor, mesin, dan teknologi yang membentuk dunia MotoGP.",
+      table: "motogp_motorcycles",
+      fields: [
+        "id",
+        "manufacturer",
+        "model",
+        "year",
+        "engine",
+        "technology",
+        "description",
+        "image_url",
+        "source_url"
+      ],
+      orderBy: "year",
+      ascending: true
+    },
 
-        riders: {
-            title: "PEMBALAP LEGENDA",
-            table: "motogp_riders",
-            description:
-                "Mengenal para pembalap legendaris dan pencapaian mereka.",
-            fields: [
-                "id",
-                "full_name",
-                "nationality",
-                "date_of_birth",
-                "team",
-                "championships",
-                "career_description",
-                "image_url"
-            ],
-            orderBy: "id"
-        },
+    riders: {
+      title: "Legenda Pembalap",
+      description:
+        "Temukan kisah para pembalap legendaris yang meninggalkan jejak dalam sejarah MotoGP.",
+      table: "motogp_riders",
+      fields: [
+        "id",
+        "full_name",
+        "nationality",
+        "date_of_birth",
+        "team",
+        "championships",
+        "career_description",
+        "image_url"
+      ],
+      orderBy: "id",
+      ascending: true
+    },
 
-        circuits: {
-            title: "SIRKUIT DUNIA",
-            table: "motogp_circuits",
-            description:
-                "Menjelajahi sirkuit ikonik yang menjadi bagian dari sejarah MotoGP.",
-            fields: [
-                "id",
-                "name",
-                "country",
-                "location",
-                "length_km",
-                "number_of_turns",
-                "description",
-                "image_url"
-            ],
-            orderBy: "id"
-        }
-    };
+    circuits: {
+      title: "Sirkuit Dunia",
+      description:
+        "Jelajahi berbagai sirkuit legendaris yang menjadi bagian dari perjalanan MotoGP.",
+      table: "motogp_circuits",
+      fields: [
+        "id",
+        "name",
+        "country",
+        "location",
+        "length_km",
+        "number_of_turns",
+        "description",
+        "image_url"
+      ],
+      orderBy: "id",
+      ascending: true
+    }
+  };
 
-    // ==================================================
-    // 3. ELEMEN WEBSITE
-    // ==================================================
+  // ==========================================
+  // ELEMEN WEBSITE
+  // ==========================================
 
-    let modal;
-    let modalTitle;
-    let modalDescription;
-    let modalClose;
-    let modalOkay;
-    let modalPanel;
+  const modal = document.getElementById("categoryModal");
+  const modalTitle = document.getElementById("modalTitle");
+  const modalDescription = document.getElementById("modalDescription");
+  const modalOkay = document.getElementById("modalOkay");
+  const modalClose = document.getElementById("modalClose");
 
-    // ==================================================
-    // 4. PENGAMAN TEKS HTML
-    // ==================================================
+  // ==========================================
+  // FUNGSI KEAMANAN
+  // ==========================================
 
-    function escapeHTML(value) {
-        return String(value ?? "")
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#039;");
+  function escapeHTML(value) {
+    return String(value ?? "").replace(/[&<>"']/g, (character) => {
+      const entities = {
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+      };
+
+      return entities[character];
+    });
+  }
+
+  function getSafeURL(value) {
+    if (!value) return "";
+
+    try {
+      const url = new URL(value);
+
+      if (url.protocol === "https:" || url.protocol === "http:") {
+        return url.href;
+      }
+    } catch (error) {
+      return "";
     }
 
-    // ==================================================
-    // 5. PENGAMAN ALAMAT SUMBER DAN FOTO
-    // ==================================================
+    return "";
+  }
 
-    function getSafeURL(value) {
-        if (!value) return "";
+  function formatValue(value) {
+    return value === null || value === undefined || value === ""
+      ? "Belum tersedia"
+      : escapeHTML(value);
+  }
 
-        try {
-            const url = new URL(value);
+  // ==========================================
+  // NAVIGASI
+  // ==========================================
 
-            if (
-                url.protocol === "https:" ||
-                url.protocol === "http:"
-            ) {
-                return url.href;
-            }
+  function setupNavigation() {
+    const menuToggle = document.querySelector(".menu-toggle");
+    const navLinks = document.querySelector(".nav-links");
 
-            return "";
-        } catch {
-            return "";
-        }
+    if (menuToggle && navLinks) {
+      menuToggle.addEventListener("click", () => {
+        navLinks.classList.toggle("open");
+
+        const isOpen = navLinks.classList.contains("open");
+        menuToggle.setAttribute("aria-expanded", String(isOpen));
+      });
+
+      navLinks.querySelectorAll("a").forEach((link) => {
+        link.addEventListener("click", () => {
+          navLinks.classList.remove("open");
+          menuToggle.setAttribute("aria-expanded", "false");
+        });
+      });
     }
 
-    // ==================================================
-    // 6. NAVIGASI WEBSITE
-    // ==================================================
+    document.querySelectorAll('a[href^="#"]').forEach((link) => {
+      link.addEventListener("click", (event) => {
+        const targetID = link.getAttribute("href");
 
-    function setupNavigation() {
-        const menuToggle = document.getElementById("menuToggle");
-        const navLinks = document.getElementById("navLinks");
+        if (!targetID || targetID === "#") return;
 
-        if (!menuToggle || !navLinks) return;
+        const target = document.querySelector(targetID);
 
-        menuToggle.addEventListener("click", () => {
-            navLinks.classList.toggle("open");
+        if (target) {
+          event.preventDefault();
+
+          target.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+          });
+        }
+      });
+    });
+  }
+
+  // ==========================================
+  // MODAL
+  // ==========================================
+
+  function openModal() {
+    if (!modal) return;
+
+    modal.classList.add("show");
+    modal.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeModal() {
+    if (!modal) return;
+
+    modal.classList.remove("show");
+    modal.setAttribute("aria-hidden", "true");
+    document.body.style.overflow = "";
+  }
+
+  function setupModal() {
+    if (modalOkay) {
+      modalOkay.addEventListener("click", closeModal);
+    }
+
+    if (modalClose) {
+      modalClose.addEventListener("click", closeModal);
+    }
+
+    if (modal) {
+      modal.addEventListener("click", (event) => {
+        if (event.target === modal) {
+          closeModal();
+        }
+      });
+    }
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        closeModal();
+      }
+    });
+  }
+
+  // ==========================================
+  // TAMPILAN STATUS
+  // ==========================================
+
+  function showLoading() {
+    if (!modalDescription) return;
+
+    modalDescription.innerHTML = `
+      <div class="archive-status">
+        <p>⏳ Sedang memuat data arsip MotoGP...</p>
+      </div>
+    `;
+  }
+
+  function showError(message) {
+    if (!modalDescription) return;
+
+    modalDescription.innerHTML = `
+      <div class="archive-status archive-error">
+        <p>Data belum berhasil dimuat.</p>
+        <p>${escapeHTML(message)}</p>
+        <p>Silakan periksa koneksi internet atau konfigurasi Supabase.</p>
+      </div>
+    `;
+  }
+
+  function showEmpty() {
+    if (!modalDescription) return;
+
+    modalDescription.innerHTML = `
+      <div class="archive-status">
+        <p>Belum ada data yang tersedia untuk kategori ini.</p>
+      </div>
+    `;
+  }
+
+  // ==========================================
+  // INFORMASI TAMBAHAN SETIAP KATEGORI
+  // ==========================================
+
+  function getArchiveDetails(category, item) {
+    if (category === "history") {
+      const years = item.year_end
+        ? `${item.year_start} – ${item.year_end}`
+        : item.year_start || "Tahun tidak tersedia";
+
+      return `
+        <span class="archive-tag">${formatValue(item.era)}</span>
+        <p><strong>Periode:</strong> ${formatValue(years)}</p>
+        <p>${formatValue(item.description)}</p>
+      `;
+    }
+
+    if (category === "technology") {
+      return `
+        <span class="archive-tag">${formatValue(item.year)}</span>
+        <p><strong>Pabrikan:</strong> ${formatValue(item.manufacturer)}</p>
+        <p><strong>Mesin:</strong> ${formatValue(item.engine)}</p>
+        <p><strong>Teknologi:</strong> ${formatValue(item.technology)}</p>
+        <p>${formatValue(item.description)}</p>
+        ${item.source_url ? `
+          <a class="archive-source"
+             href="${getSafeURL(item.source_url)}"
+             target="_blank"
+             rel="noopener noreferrer">
+            Lihat sumber informasi ↗
+          </a>
+        ` : ""}
+      `;
+    }
+
+    if (category === "riders") {
+      return `
+        <span class="archive-tag">PEMBALAP LEGENDARIS</span>
+        <p><strong>Negara:</strong> ${formatValue(item.nationality)}</p>
+        <p><strong>Tanggal lahir:</strong> ${formatValue(item.date_of_birth)}</p>
+        <p><strong>Tim:</strong> ${formatValue(item.team)}</p>
+        <p><strong>Gelar juara dunia:</strong> ${formatValue(item.championships)}</p>
+        <p>${formatValue(item.career_description)}</p>
+      `;
+    }
+
+    if (category === "circuits") {
+      return `
+        <span class="archive-tag">SIRKUIT MOTOGP</span>
+        <p><strong>Negara:</strong> ${formatValue(item.country)}</p>
+        <p><strong>Lokasi:</strong> ${formatValue(item.location)}</p>
+        <p><strong>Panjang lintasan:</strong> ${formatValue(item.length_km)} km</p>
+        <p><strong>Jumlah tikungan:</strong> ${formatValue(item.number_of_turns)}</p>
+        <p>${formatValue(item.description)}</p>
+      `;
+    }
+
+    return "";
+  }
+
+  // ==========================================
+  // GAMBAR ARSIP
+  // ==========================================
+
+  function createImage(imageURL, title) {
+    const safeURL = getSafeURL(imageURL);
+
+    if (!safeURL) {
+      return `
+        <div class="archive-image-placeholder">
+          GAMBAR BELUM TERSEDIA
+        </div>
+      `;
+    }
+
+    return `
+      <img
+        class="archive-image"
+        src="${escapeHTML(safeURL)}"
+        alt="${escapeHTML(title)}"
+        loading="lazy"
+        onerror="this.style.display='none';"
+      >
+    `;
+  }
+
+  // ==========================================
+  // KARTU ARSIP
+  // ==========================================
+
+  function createArchiveCard(category, item) {
+    let title = "";
+
+    if (category === "history") {
+      title = item.title;
+    } else if (category === "technology") {
+      title = `${item.manufacturer || ""} ${item.model || ""}`.trim();
+    } else if (category === "riders") {
+      title = item.full_name;
+    } else if (category === "circuits") {
+      title = item.name;
+    }
+
+    const safeTitle = escapeHTML(title || "Arsip MotoGP");
+    const image = createImage(item.image_url, title);
+
+    return `
+      <article class="archive-result-card">
+        <div class="archive-result-image">
+          ${image}
+        </div>
+
+        <div class="archive-result-content">
+          <h3>${safeTitle}</h3>
+          <div class="archive-result-details">
+            ${getArchiveDetails(category, item)}
+          </div>
+        </div>
+      </article>
+    `;
+  }
+
+  // ==========================================
+  // MENAMPILKAN HASIL ARSIP
+  // ==========================================
+
+  function displayArchiveResults(category, data) {
+    if (!modalDescription) return;
+
+    if (!data || data.length === 0) {
+      showEmpty();
+      return;
+    }
+
+    const resultsHTML = data
+      .map((item) => createArchiveCard(category, item))
+      .join("");
+
+    modalDescription.innerHTML = `
+      <div class="archive-results">
+        <p class="archive-result-count">
+          Ditemukan ${data.length} data arsip
+        </p>
+
+        <div class="archive-results-grid">
+          ${resultsHTML}
+        </div>
+      </div>
+    `;
+  }
+
+  // ==========================================
+  // MENGAMBIL DATA DARI SUPABASE
+  // ==========================================
+
+  async function fetchArchive(category) {
+    const config = archiveConfig[category];
+
+    if (!config) {
+      showError("Kategori arsip tidak ditemukan.");
+      return;
+    }
+
+    showLoading();
+
+    try {
+      const { data, error } = await supabase
+        .from(config.table)
+        .select(config.fields.join(","))
+        .order(config.orderBy, {
+          ascending: config.ascending
         });
 
-        document.querySelectorAll(".nav-links a").forEach(link => {
-            link.addEventListener("click", () => {
-                navLinks.classList.remove("open");
-            });
-        });
+      if (error) {
+        throw error;
+      }
+
+      displayArchiveResults(category, data);
+    } catch (error) {
+      console.error("Kesalahan mengambil data:", error);
+      showError(error.message || "Terjadi kesalahan koneksi.");
     }
+  }
 
-    // ==================================================
-    // 7. PENGATURAN MODAL
-    // ==================================================
+  // ==========================================
+  // TOMBOL KATEGORI ARSIP
+  // ==========================================
 
-    function setupModal() {
-        modal = document.getElementById("categoryModal");
-        modalTitle = document.getElementById("modalTitle");
-        modalDescription = document.getElementById("modalDescription");
-        modalClose = document.getElementById("modalClose");
-        modalOkay = document.getElementById("modalOkay");
+  function setupArchiveButtons() {
+    const buttons = document.querySelectorAll("[data-category]");
 
-        modalPanel = modal
-            ? modal.querySelector(".modal-panel")
-            : null;
-
-        if (modalClose) {
-            modalClose.addEventListener("click", closeModal);
-        }
-
-        if (modalOkay) {
-            modalOkay.addEventListener("click", closeModal);
-        }
-
-        if (modal) {
-            modal.addEventListener("click", event => {
-                if (event.target === modal) {
-                    closeModal();
-                }
-            });
-        }
-
-        document.addEventListener("keydown", event => {
-            if (event.key === "Escape") {
-                closeModal();
-            }
-        });
-    }
-
-    function openModal() {
-        if (!modal) return;
-
-        modal.classList.add("show");
-        modal.setAttribute("aria-hidden", "false");
-
-        document.body.style.overflow = "hidden";
-    }
-
-    function closeModal() {
-        if (!modal) return;
-
-        modal.classList.remove("show");
-        modal.setAttribute("aria-hidden", "true");
-
-        document.body.style.overflow = "";
-    }
-
-    // ==================================================
-    // 8. PENGATURAN TAMPILAN MODAL
-    // ==================================================
-
-    function prepareModal() {
-        if (!modalPanel) return;
-
-        modalPanel.style.maxWidth = "850px";
-        modalPanel.style.maxHeight = "85vh";
-        modalPanel.style.overflowY = "auto";
-    }
-
-    // ==================================================
-    // 9. MEMBUAT AREA HASIL ARSIP
-    // ==================================================
-
-    function getResultsContainer() {
-        if (!modalPanel) return null;
-
-        let container = document.getElementById("archiveResults");
-
-        if (!container) {
-            container = document.createElement("div");
-            container.id = "archiveResults";
-
-            const insertBeforeElement =
-                modalOkay && modalOkay.parentElement === modalPanel
-                    ? modalOkay
-                    : null;
-
-            modalPanel.insertBefore(
-                container,
-                insertBeforeElement
-            );
-        }
-
-        return container;
-    }
-
-    // ==================================================
-    // 10. TAMPILAN LOADING
-    // ==================================================
-
-    function showLoading() {
-        if (modalDescription) {
-            modalDescription.textContent =
-                "Sedang mengambil data dari database MotoGP...";
-        }
-
-        const container = getResultsContainer();
-
-        if (container) {
-            container.innerHTML = `
-                <div style="
-                    padding:35px 15px;
-                    text-align:center;
-                    color:#cccccc;
-                ">
-                    <div style="
-                        font-size:30px;
-                        margin-bottom:12px;
-                    ">🏁</div>
-
-                    <p>Memuat koleksi arsip MotoGP...</p>
-                </div>
-            `;
-        }
-
-        if (modalOkay) {
-            modalOkay.style.display = "none";
-        }
-    }
-
-    // ==================================================
-    // 11. TAMPILAN ERROR
-    // ==================================================
-
-    function showError(message) {
-        if (modalDescription) {
-            modalDescription.textContent =
-                "Maaf, data belum dapat dimuat dari database.";
-        }
-
-        const container = getResultsContainer();
-
-        if (container) {
-            container.innerHTML = `
-                <div style="
-                    padding:20px;
-                    background:#241313;
-                    border:1px solid #a52a2a;
-                    color:#ffb3b3;
-                    margin-top:20px;
-                    font-size:13px;
-                    line-height:1.8;
-                    border-radius:5px;
-                ">
-                    <strong>Terjadi Kesalahan</strong>
-
-                    <p>${escapeHTML(message)}</p>
-
-                    <p>
-                        Silakan periksa koneksi Supabase,
-                        nama tabel, kolom database, dan kebijakan RLS.
-                    </p>
-                </div>
-            `;
-        }
-
-        if (modalOkay) {
-            modalOkay.style.display = "inline-flex";
-        }
-    }
-
-    // ==================================================
-    // 12. FORMAT DATA SEJARAH MOTOGP
-    // ==================================================
-
-    function getArchiveDetails(category, item) {
-
-        if (category === "history") {
-            return {
-                title: item.title,
-                subtitle: item.era || "Sejarah MotoGP",
-
-                year: item.year_end
-                    ? `${item.year_start} – ${item.year_end}`
-                    : `${item.year_start} – Sekarang`,
-
-                description: item.description
-            };
-        }
-
-        // ==================================================
-        // MOTOR DAN TEKNOLOGI
-        // ==================================================
-
-        if (category === "technology") {
-            return {
-                title: `${item.manufacturer} ${item.model}`,
-
-                subtitle: item.engine || "Motor Grand Prix",
-
-                year: item.year || "-",
-
-                description: item.description,
-
-                extra: item.technology
-                    ? `Teknologi: ${item.technology}`
-                    : "",
-
-                sourceUrl: item.source_url || ""
-            };
-        }
-
-        // ==================================================
-        // PEMBALAP LEGENDA
-        // ==================================================
-
-        if (category === "riders") {
-            return {
-                title: item.full_name,
-
-                subtitle: item.nationality || "Pembalap MotoGP",
-
-                year: item.date_of_birth
-                    ? `Tanggal lahir: ${item.date_of_birth}`
-                    : "",
-
-                description: item.career_description,
-
-                extra:
-                    `Gelar juara dunia: ${item.championships ?? 0}` +
-                    (item.team ? ` | Tim: ${item.team}` : "")
-            };
-        }
-
-        // ==================================================
-        // SIRKUIT DUNIA
-        // ==================================================
-
-        if (category === "circuits") {
-            return {
-                title: item.name,
-
-                subtitle: item.country || "Sirkuit Grand Prix",
-
-                year: item.location || "",
-
-                description: item.description,
-
-                extra:
-                    `Panjang lintasan: ${item.length_km ?? "-"} km` +
-                    ` | Jumlah tikungan: ${item.number_of_turns ?? "-"}`
-            };
-        }
-
-        return null;
-    }
-
-    // ==================================================
-    // 13. MEMBUAT TOMBOL SUMBER REFERENSI
-    // ==================================================
-
-    function createSourceButton(sourceUrl) {
-        const safeURL = getSafeURL(sourceUrl);
-
-        if (!safeURL) return "";
-
-        return `
-            <a
-                href="${escapeHTML(safeURL)}"
-                target="_blank"
-                rel="noopener noreferrer"
-                style="
-                    display:inline-block;
-                    margin-top:16px;
-                    padding:11px 18px;
-                    background:#e10600;
-                    color:#ffffff;
-                    text-decoration:none;
-                    font-size:11px;
-                    font-weight:800;
-                    letter-spacing:1px;
-                    border-radius:3px;
-                    transition:background 0.3s ease;
-                "
-            >
-                LIHAT SUMBER REFERENSI ↗
-            </a>
-        `;
-    }
-
-    // ==================================================
-    // 14. MEMBUAT TAMPILAN FOTO
-    // ==================================================
-
-    function createImageHTML(imageURL, title) {
-        const safeURL = getSafeURL(imageURL);
-
-        if (!safeURL) {
-            return "";
-        }
-
-        return `
-            <img
-                src="${escapeHTML(safeURL)}"
-                alt="${escapeHTML(title)}"
-                loading="lazy"
-                style="
-                    width:100%;
-                    height:210px;
-                    object-fit:cover;
-                    display:block;
-                    margin-bottom:16px;
-                    border-radius:4px;
-                    background:#111111;
-                "
-                onerror="this.style.display='none'"
-            >
-        `;
-    }
-
-    // ==================================================
-    // 15. MEMBUAT KARTU ARSIP
-    // ==================================================
-
-    function createArchiveCard(category, item) {
-        const details = getArchiveDetails(category, item);
-
-        if (!details) return "";
-
-        const imageHTML = createImageHTML(
-            item.image_url,
-            details.title
-        );
-
-        const sourceHTML = category === "technology"
-            ? createSourceButton(details.sourceUrl)
-            : "";
-
-        const extraHTML = details.extra
-            ? `
-                <p style="
-                    color:#aaaaaa;
-                    font-size:11px;
-                    line-height:1.8;
-                    margin-top:12px;
-                ">
-                    ${escapeHTML(details.extra)}
-                </p>
-            `
-            : "";
-
-        return `
-            <article style="
-                background:#202020;
-                border:1px solid #393939;
-                border-left:4px solid #e10600;
-                margin:16px 0;
-                padding:19px;
-                text-align:left;
-                border-radius:4px;
-            ">
-
-                ${imageHTML}
-
-                <span style="
-                    color:#e10600;
-                    font-size:11px;
-                    font-weight:800;
-                    letter-spacing:2px;
-                ">
-                    ${escapeHTML(details.year)}
-                </span>
-
-                <h3 style="
-                    color:#ffffff;
-                    font-family:'Barlow Condensed',sans-serif;
-                    font-size:27px;
-                    margin:9px 0;
-                ">
-                    ${escapeHTML(details.title)}
-                </h3>
-
-                <p style="
-                    color:#e10600;
-                    font-size:11px;
-                    font-weight:700;
-                    margin-bottom:12px;
-                    line-height:1.7;
-                ">
-                    ${escapeHTML(details.subtitle)}
-                </p>
-
-                <p style="
-                    color:#c5c5c5;
-                    font-size:12px;
-                    line-height:1.9;
-                    white-space:normal;
-                ">
-                    ${escapeHTML(details.description || "Belum ada deskripsi.")}
-                </p>
-
-                ${extraHTML}
-
-                ${sourceHTML}
-
-            </article>
-        `;
-    }
-
-    // ==================================================
-    // 16. MENAMPILKAN DATA KE WEBSITE
-    // ==================================================
-
-    function renderArchiveData(category, data) {
-        const config = archiveConfig[category];
-
-        const container = getResultsContainer();
-
-        if (!container || !config) return;
-
-        if (modalDescription) {
-            modalDescription.textContent = config.description;
-        }
-
-        if (!data || data.length === 0) {
-            container.innerHTML = `
-                <div style="
-                    color:#aaaaaa;
-                    padding:30px 10px;
-                    text-align:center;
-                    line-height:1.8;
-                ">
-                    <p>Belum ada data yang tersedia.</p>
-                </div>
-            `;
-
-            if (modalOkay) {
-                modalOkay.style.display = "inline-flex";
-            }
-
-            return;
-        }
-
-        container.innerHTML = data
-            .map(item => createArchiveCard(category, item))
-            .join("");
-
-        if (modalOkay) {
-            modalOkay.style.display = "inline-flex";
-        }
-
-        console.log(
-            `Berhasil menampilkan ${data.length} data dari ${config.table}`
-        );
-    }
-
-    // ==================================================
-    // 17. MENGAMBIL DATA DARI SUPABASE
-    // ==================================================
-
-    async function fetchArchiveData(category) {
+    buttons.forEach((button) => {
+      button.addEventListener("click", async () => {
+        const category = button.dataset.category;
         const config = archiveConfig[category];
 
         if (!config) {
-            console.error("Kategori tidak ditemukan:", category);
-            return;
-        }
-
-        if (!supabaseClient) {
-            showError("Koneksi Supabase belum berhasil dibuat.");
-            openModal();
-            return;
+          console.error("Kategori tidak dikenali:", category);
+          return;
         }
 
         if (modalTitle) {
-            modalTitle.textContent = config.title;
+          modalTitle.textContent = config.title;
         }
 
         if (modalDescription) {
-            modalDescription.textContent = config.description;
+          modalDescription.textContent = config.description;
         }
 
-        prepareModal();
-        showLoading();
         openModal();
+        await fetchArchive(category);
+      });
+    });
+  }
 
-        try {
-            const { data, error } = await supabaseClient
-                .from(config.table)
-                .select(config.fields.join(","))
-                .order(config.orderBy, {
-                    ascending: true
-                });
+  // ==========================================
+  // PEMERIKSAAN KONEKSI SUPABASE
+  // ==========================================
 
-            if (error) {
-                throw error;
-            }
+  async function testConnection() {
+    try {
+      const { error } = await supabase
+        .from("motogp_history")
+        .select("id")
+        .limit(1);
 
-            renderArchiveData(category, data || []);
+      if (error) {
+        throw error;
+      }
 
-            console.log(
-                `Berhasil mengambil ${data.length} data dari ${config.table}`
-            );
-
-        } catch (error) {
-            console.error("Supabase error:", error);
-
-            showError(
-                error.message || "Terjadi kesalahan saat mengambil data."
-            );
-        }
+      console.log("MotoGP Heritage: koneksi Supabase berhasil.");
+    } catch (error) {
+      console.error("Koneksi Supabase bermasalah:", error.message);
     }
+  }
 
-    // ==================================================
-    // 18. TOMBOL KATEGORI ARSIP
-    // ==================================================
+  // ==========================================
+  // MENJALANKAN WEBSITE
+  // ==========================================
 
-    function setupCategoryButtons() {
-        document.querySelectorAll("[data-category]").forEach(button => {
+  function initializeApp() {
+    setupNavigation();
+    setupModal();
+    setupArchiveButtons();
+    testConnection();
 
-            button.addEventListener("click", () => {
-                const category = button.dataset.category;
+    console.log("MotoGP Heritage berhasil dijalankan.");
+  }
 
-                fetchArchiveData(category);
-            });
-
-        });
-    }
-
-    // ==================================================
-    // 19. TES KONEKSI SUPABASE
-    // ==================================================
-
-    async function testSupabaseConnection() {
-        console.log("Memeriksa koneksi Supabase...");
-
-        try {
-            const { error } = await supabaseClient
-                .from("motogp_history")
-                .select("id")
-                .limit(1);
-
-            if (error) {
-                throw error;
-            }
-
-            console.log("Koneksi Supabase berhasil!");
-            console.log("MotoGP Legacy Archive siap digunakan.");
-
-        } catch (error) {
-            console.error(
-                "Koneksi Supabase gagal:",
-                error.message
-            );
-        }
-    }
-
-    // ==================================================
-    // 20. MEMULAI APLIKASI
-    // ==================================================
-
-    function initializeApp() {
-        console.log("MotoGP Legacy Archive dimulai!");
-
-        setupNavigation();
-        setupModal();
-        setupCategoryButtons();
-
-        if (!window.supabase) {
-            console.error(
-                "Library Supabase belum dimuat. Periksa script CDN di index.html."
-            );
-            return;
-        }
-
-        try {
-            supabaseClient = window.supabase.createClient(
-                SUPABASE_URL,
-                SUPABASE_ANON_KEY
-            );
-
-            console.log("Supabase client berhasil dibuat!");
-
-            testSupabaseConnection();
-
-        } catch (error) {
-            console.error(
-                "Gagal membuat koneksi Supabase:",
-                error
-            );
-        }
-    }
-
-    // Menjalankan aplikasi setelah HTML siap.
-
-    if (document.readyState === "loading") {
-        document.addEventListener(
-            "DOMContentLoaded",
-            initializeApp
-        );
-    } else {
-        initializeApp();
-    }
-
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initializeApp);
+  } else {
+    initializeApp();
+  }
 })();
