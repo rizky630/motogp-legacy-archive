@@ -1,531 +1,178 @@
-
-(() => {
-  "use strict";
-
-  // ==========================================
-  // KONFIGURASI SUPABASE
-  // ==========================================
-
-  const SUPABASE_URL = "https://hhfksogwcuezjyviygkb.supabase.co";
-
-  const SUPABASE_KEY =
-    "sb_publishable_0bIZlUdcS98fY-xefsmSzA_d235gVHt";
-
-  const supabase = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-  );
-
-  // ==========================================
-  // KONFIGURASI ARSIP
-  // Nama tabel dan kolom dipertahankan
-  // ==========================================
-
-  const archiveConfig = {
-    history: {
-      title: "Sejarah MotoGP",
-      description:
-        "Jelajahi perjalanan panjang kejuaraan balap motor dunia dari masa ke masa.",
-      table: "motogp_history",
-      fields: [
-        "id",
-        "title",
-        "era",
-        "year_start",
-        "year_end",
-        "description",
-        "image_url",
-        "sort_order"
-      ],
-      orderBy: "sort_order",
-      ascending: true
+// Database Sejarah Lengkap, Foto Motor, Foto Pembalap, dan Foto Sirkuit Spesifik
+const databaseSejarahLengkap = {
+    "1949": {
+        judul: "Era Perintis & Kelas 500cc (1949 – 1970-an)",
+        pembalap: "Harold Daniell",
+        fotoPembalap: "https://files.speedweek.com/images/c_fill,f_auto,q_auto,w_750,h_500/2025/11/7/240617daniella1jpg/a35b015090e445f9aed14ce4d959f1ba",
+        fotoMotor: "https://primotipo.com/wp-content/uploads/2016/01/image60.jpg",
+        fotoSirkuit: "https://www.myracingcareer.com/images/tracks/snaefell_600.jpg",
+        sirkuit: "Isle of Man TT (Inggris)",
+        spek: "500cc 4-Tak Single Cylinder | Top Speed ±170 km/jam",
+        poinHtml: `
+            <p><strong>Awal Mula:</strong> FIM (Fédération Internationale de Motocyclisme) secara resmi menggelar Kejuaraan Dunia Balap Motor pertama kali pada tahun 1949. Balapan kelas premier saat itu menggunakan mesin berkapasitas 500cc.</p>
+            <p><strong>Karakteristik & Legenda:</strong> Pada masa ini, pabrikan asal Britania Raya dan Eropa mendominasi menggunakan motor 4-tak berpendingin udara (seperti Norton dan AJS). Pembalap legendaris Harold Daniell mencatatkan sejarah sebagai pemenang balapan kelas 500cc pertama di sirkuit ekstrem Isle of Man TT pada 1 Juni 1949. Sirkuit balap pada era ini umumnya berupa jalan raya biasa yang dikelilingi pohon, tebing, dan tanpa pagar pengaman modern.</p>
+        `
     },
-
-    technology: {
-      title: "Motor dan Teknologi",
-      description:
-        "Kenali perkembangan motor, mesin, dan teknologi yang membentuk dunia MotoGP.",
-      table: "motogp_motorcycles",
-      fields: [
-        "id",
-        "manufacturer",
-        "model",
-        "year",
-        "engine",
-        "technology",
-        "description",
-        "image_url",
-        "source_url"
-      ],
-      orderBy: "year",
-      ascending: true
+    "1994": {
+        judul: "Era Dominasi Pabrikan Jepang & Mesin 2-Tak (1970-an – 2001)",
+        pembalap: "Mick Doohan",
+        fotoPembalap: "https://media.gettyimages.com/id/650059070/pt/foto/michael-mick-sydney-doohan-the-500-cc-world-championship-for-1994-and-1995-seen-on-his-repsol.jpg?s=2048x2048&w=gi&k=20&c=BmrVY3bfyXmzhg0v7zplpDnqrvaDi3-E-y_pPF-WTtI=",
+        fotoMotor: "https://www.mcnews.com.au/wp-content/uploads/2019/11/1994-Honda-NSR500-Doohan-ImagePA-5-1024x876.jpg",
+        fotoSirkuit: "https://images.openai.com/static-rsc-4/9E6dqtGO8Cu1J26BCO4GjBXqFVZ9h2yvb_OkxtgFAhqRzk8sf0WCYgehN7XnQJ3luS7hpr17S75gGrre_CLQUwPvzMAQ_SLOmnNiN93ontalctEEIFk9fVM_Acxhoyuvxhoen3jlRxPMV3FayZbnwsHJzboLVkIOzREfgSywgWD_E9UmkBdAbwc_Tyh4a8f2?purpose=fullsize",
+        sirkuit: "Sirkuit Suzuka (Jepang)",
+        spek: "499cc 2-Tak V4 | Power: 185+ HP | Top Speed ±320 km/jam",
+        poinHtml: `
+            <p><strong>Revolusi Teknologi:</strong> Memasuki era 70-an hingga 90-an, pabrikan asal Jepang seperti Honda, Yamaha, dan Suzuki mulai mendominasi total dengan beralih ke mesin 2-tak berkonfigurasi V4.</p>
+            <p><strong>Karakteristik & Legenda:</strong> Mesin 2-tak dikenal sangat bertenaga, ringan, namun memiliki karakter liar dan sulit dijinakkan karena belum ada bantuan kontrol elektronik (traction control). Salah satu motor paling ikonik di era ini adalah Honda NSR500 yang membawa legenda Mick Doohan meraih 5 gelar juara dunia berturut-turut pada dekade 90-an.</p>
+        `
     },
-
-    riders: {
-      title: "Legenda Pembalap",
-      description:
-        "Temukan kisah para pembalap legendaris yang meninggalkan jejak dalam sejarah MotoGP.",
-      table: "motogp_riders",
-      fields: [
-        "id",
-        "full_name",
-        "nationality",
-        "date_of_birth",
-        "team",
-        "championships",
-        "career_description",
-        "image_url"
-      ],
-      orderBy: "id",
-      ascending: true
+    "2009": {
+        judul: "Era Modern \"MotoGP\" 4-Tak (2002 – 2011)",
+        pembalap: "Valentino Rossi",
+        fotoPembalap: "https://media.gettyimages.com/id/485944276/photo/motogp-of-great-britain-race.jpg?s=1024x1024&w=gi&k=20&c=daVilaSBHEwvCBbJPr2rdPG584s0OQOGnx3OgJRYe5A=",
+        fotoMotor: "https://global.yamaha-motor.com/showroom/cp/collection/racing_yzr-m1_0ws9/img/2010_YZR-M1_0WS9.jpg",
+        fotoSirkuit: "https://images.openai.com/static-rsc-4/CsKIRJk7GjnfWfmxl9Rhhp2av8QVTz6sCLCo8WR9nW-dV7r53imkYse7qQIsgLz3w375mnjPoh8iPo64-epqr8nG8FW0G1hyaphLQ_b-q1fDVPID6GXjFQ8IlEXTkUTe9l-Lxni39Jm1B3DBSwO0n73UI9fqZ50q5oA-fEak80S-EtSsafR-SOHKnguhDq7L?purpose=fullsize",
+        sirkuit: "Sirkuit Mugello (Italia)",
+        spek: "800cc / 990cc 4-Tak | Power: 220+ HP | Top Speed ±345 km/jam",
+        poinHtml: `
+            <p><strong>Transformasi Regulasi:</strong> Mulai tahun 2002, regulasi FIM mengubah nama kelas utama dari 500cc 2-tak menjadi MotoGP dengan kewajiban menggunakan mesin 4-tak berkapasitas 990cc, yang kemudian diturunkan menjadi 800cc pada tahun 2007.</p>
+            <p><strong>Karakteristik & Legenda:</strong> Era ini melahirkan generasi motor bertenaga raksasa dengan teknologi injeksi bahan bakar dan elektronik canggih. Yamaha YZR-M1 menjadi salah satu motor tersukses di tangan Valentino Rossi, yang bersaing ketat dengan era Fantastic Four bersama Casey Stoner, Jorge Lorenzo, dan Dani Pedrosa.</p>
+        `
     },
-
-    circuits: {
-      title: "Sirkuit Dunia",
-      description:
-        "Jelajahi berbagai sirkuit legendaris yang menjadi bagian dari perjalanan MotoGP.",
-      table: "motogp_circuits",
-      fields: [
-        "id",
-        "name",
-        "country",
-        "location",
-        "length_km",
-        "number_of_turns",
-        "description",
-        "image_url"
-      ],
-      orderBy: "id",
-      ascending: true
+    "2024": {
+        judul: "Era Aerodinamika & Teknologi Tinggi (2012 – Sekarang)",
+        pembalap: "Francesco Bagnaia & Marc Marquez",
+        fotoPembalap: "https://www.mcnews.com.au/wp-content/uploads/2026/01/2026-MotoGP-Ducati-GP26-Launch-Pecco-Bagnaia-Gigi-DallIgnaTardozzi-Grassilli-Marc-Marquez-1536x864.jpg",
+        fotoMotor: "https://www.mcnews.com.au/wp-content/uploads/2026/01/2026-MotoGP-Ducati-GP26-Launch-Desmosedici-GP26-Bagnaia-Marquez-1-1536x798.jpg",
+        fotoSirkuit: "https://images.openai.com/static-rsc-4/9E6dqtGO8Cu1J26BCO4GjBXqFVZ9h2yvb_OkxtgFAhqRzk8sf0WCYgehN7XnQJ3luS7hpr17S75gGrre_CLQUwPvzMAQ_SLOmnNiN93ontalctEEIFk9fVM_Acxhoyuvxhoen3jlRxPMV3FayZbnwsHJzboLVkIOzREfgSywgWD_E9UmkBdAbwc_Tyh4a8f2?purpose=fullsize",
+        sirkuit: "Sirkuit Mandalika (Indonesia)",
+        spek: "1000cc 4-Tak V4 | Power: 290+ HP | Top Speed >360 km/jam",
+        poinHtml: `
+            <p><strong>Inovasi Modern:</strong> Memasuki era mesin 1000cc berbasis purwarupa pabrikan, balap MotoGP bertransformasi menjadi ajang adu teknologi aerodinamika tercanggih di dunia.</p>
+            <p><strong>Karakteristik & Legenda:</strong> Ducati Desmosedici GP memelopori penggunaan sayap aero (winglets), perangkat pengatur ketinggian pengendaraan (ride-height devices), hingga ECU standar Magneti Marelli. Pembalap modern seperti Marc Marquez dan Francesco Bagnaia mampu menembus rekor kecepatan puncak hingga lebih dari 360 km/jam dengan tingkat presisi tikungan yang luar biasa.</p>
+        `
     }
-  };
+};
 
-  // ==========================================
-  // ELEMEN WEBSITE
-  // ==========================================
+// Musik Latar
+function playMotoGPMusic() {
+    const audio = document.getElementById('bg-music');
+    if (audio && audio.paused) {
+        audio.volume = 0.4;
+        audio.play().catch(err => console.log("Audio:", err));
+    }
+}
 
-  const modal = document.getElementById("categoryModal");
-  const modalTitle = document.getElementById("modalTitle");
-  const modalDescription = document.getElementById("modalDescription");
-  const modalOkay = document.getElementById("modalOkay");
-  const modalClose = document.getElementById("modalClose");
-
-  // ==========================================
-  // FUNGSI KEAMANAN
-  // ==========================================
-
-  function escapeHTML(value) {
-    return String(value ?? "").replace(/[&<>"']/g, (character) => {
-      const entities = {
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#039;"
-      };
-
-      return entities[character];
+// Pindah Halaman Utama
+function showSection(sectionId) {
+    playMotoGPMusic();
+    document.querySelectorAll('.page-section').forEach(sec => {
+        sec.classList.remove('active');
     });
-  }
+    document.getElementById(sectionId).classList.add('active');
+}
 
-  function getSafeURL(value) {
-    if (!value) return "";
+// Buka Kategori Menu
+function openCategory(type) {
+    playMotoGPMusic();
+    showSection('content-section');
+    
+    const container = document.getElementById('katalog-container');
+    const title = document.getElementById('section-title');
+    container.innerHTML = '';
 
-    try {
-      const url = new URL(value);
-
-      if (url.protocol === "https:" || url.protocol === "http:") {
-        return url.href;
-      }
-    } catch (error) {
-      return "";
-    }
-
-    return "";
-  }
-
-  function formatValue(value) {
-    return value === null || value === undefined || value === ""
-      ? "Belum tersedia"
-      : escapeHTML(value);
-  }
-
-  // ==========================================
-  // NAVIGASI
-  // ==========================================
-
-  function setupNavigation() {
-    const menuToggle = document.querySelector(".menu-toggle");
-    const navLinks = document.querySelector(".nav-links");
-
-    if (menuToggle && navLinks) {
-      menuToggle.addEventListener("click", () => {
-        navLinks.classList.toggle("open");
-
-        const isOpen = navLinks.classList.contains("open");
-        menuToggle.setAttribute("aria-expanded", String(isOpen));
-      });
-
-      navLinks.querySelectorAll("a").forEach((link) => {
-        link.addEventListener("click", () => {
-          navLinks.classList.remove("open");
-          menuToggle.setAttribute("aria-expanded", "false");
-        });
-      });
-    }
-
-    document.querySelectorAll('a[href^="#"]').forEach((link) => {
-      link.addEventListener("click", (event) => {
-        const targetID = link.getAttribute("href");
-
-        if (!targetID || targetID === "#") return;
-
-        const target = document.querySelector(targetID);
-
-        if (target) {
-          event.preventDefault();
-
-          target.scrollIntoView({
-            behavior: "smooth",
-            block: "start"
-          });
-        }
-      });
-    });
-  }
-
-  // ==========================================
-  // MODAL
-  // ==========================================
-
-  function openModal() {
-    if (!modal) return;
-
-    modal.classList.add("show");
-    modal.setAttribute("aria-hidden", "false");
-    document.body.style.overflow = "hidden";
-  }
-
-  function closeModal() {
-    if (!modal) return;
-
-    modal.classList.remove("show");
-    modal.setAttribute("aria-hidden", "true");
-    document.body.style.overflow = "";
-  }
-
-  function setupModal() {
-    if (modalOkay) {
-      modalOkay.addEventListener("click", closeModal);
-    }
-
-    if (modalClose) {
-      modalClose.addEventListener("click", closeModal);
-    }
-
-    if (modal) {
-      modal.addEventListener("click", (event) => {
-        if (event.target === modal) {
-          closeModal();
-        }
-      });
-    }
-
-    document.addEventListener("keydown", (event) => {
-      if (event.key === "Escape") {
-        closeModal();
-      }
-    });
-  }
-
-  // ==========================================
-  // TAMPILAN STATUS
-  // ==========================================
-
-  function showLoading() {
-    if (!modalDescription) return;
-
-    modalDescription.innerHTML = `
-      <div class="archive-status">
-        <p>⏳ Sedang memuat data arsip MotoGP...</p>
-      </div>
-    `;
-  }
-
-  function showError(message) {
-    if (!modalDescription) return;
-
-    modalDescription.innerHTML = `
-      <div class="archive-status archive-error">
-        <p>Data belum berhasil dimuat.</p>
-        <p>${escapeHTML(message)}</p>
-        <p>Silakan periksa koneksi internet atau konfigurasi Supabase.</p>
-      </div>
-    `;
-  }
-
-  function showEmpty() {
-    if (!modalDescription) return;
-
-    modalDescription.innerHTML = `
-      <div class="archive-status">
-        <p>Belum ada data yang tersedia untuk kategori ini.</p>
-      </div>
-    `;
-  }
-
-  // ==========================================
-  // INFORMASI TAMBAHAN SETIAP KATEGORI
-  // ==========================================
-
-  function getArchiveDetails(category, item) {
-    if (category === "history") {
-      const years = item.year_end
-        ? `${item.year_start} – ${item.year_end}`
-        : item.year_start || "Tahun tidak tersedia";
-
-      return `
-        <span class="archive-tag">${formatValue(item.era)}</span>
-        <p><strong>Periode:</strong> ${formatValue(years)}</p>
-        <p>${formatValue(item.description)}</p>
-      `;
-    }
-
-    if (category === "technology") {
-      return `
-        <span class="archive-tag">${formatValue(item.year)}</span>
-        <p><strong>Pabrikan:</strong> ${formatValue(item.manufacturer)}</p>
-        <p><strong>Mesin:</strong> ${formatValue(item.engine)}</p>
-        <p><strong>Teknologi:</strong> ${formatValue(item.technology)}</p>
-        <p>${formatValue(item.description)}</p>
-        ${item.source_url ? `
-          <a class="archive-source"
-             href="${getSafeURL(item.source_url)}"
-             target="_blank"
-             rel="noopener noreferrer">
-            Lihat sumber informasi ↗
-          </a>
-        ` : ""}
-      `;
-    }
-
-    if (category === "riders") {
-      return `
-        <span class="archive-tag">PEMBALAP LEGENDARIS</span>
-        <p><strong>Negara:</strong> ${formatValue(item.nationality)}</p>
-        <p><strong>Tanggal lahir:</strong> ${formatValue(item.date_of_birth)}</p>
-        <p><strong>Tim:</strong> ${formatValue(item.team)}</p>
-        <p><strong>Gelar juara dunia:</strong> ${formatValue(item.championships)}</p>
-        <p>${formatValue(item.career_description)}</p>
-      `;
-    }
-
-    if (category === "circuits") {
-      return `
-        <span class="archive-tag">SIRKUIT MOTOGP</span>
-        <p><strong>Negara:</strong> ${formatValue(item.country)}</p>
-        <p><strong>Lokasi:</strong> ${formatValue(item.location)}</p>
-        <p><strong>Panjang lintasan:</strong> ${formatValue(item.length_km)} km</p>
-        <p><strong>Jumlah tikungan:</strong> ${formatValue(item.number_of_turns)}</p>
-        <p>${formatValue(item.description)}</p>
-      `;
-    }
-
-    return "";
-  }
-
-  // ==========================================
-  // GAMBAR ARSIP
-  // ==========================================
-
-  function createImage(imageURL, title) {
-    const safeURL = getSafeURL(imageURL);
-
-    if (!safeURL) {
-      return `
-        <div class="archive-image-placeholder">
-          GAMBAR BELUM TERSEDIA
-        </div>
-      `;
-    }
-
-    return `
-      <img
-        class="archive-image"
-        src="${escapeHTML(safeURL)}"
-        alt="${escapeHTML(title)}"
-        loading="lazy"
-        onerror="this.style.display='none';"
-      >
-    `;
-  }
-
-  // ==========================================
-  // KARTU ARSIP
-  // ==========================================
-
-  function createArchiveCard(category, item) {
-    let title = "";
-
-    if (category === "history") {
-      title = item.title;
-    } else if (category === "technology") {
-      title = `${item.manufacturer || ""} ${item.model || ""}`.trim();
-    } else if (category === "riders") {
-      title = item.full_name;
-    } else if (category === "circuits") {
-      title = item.name;
-    }
-
-    const safeTitle = escapeHTML(title || "Arsip MotoGP");
-    const image = createImage(item.image_url, title);
-
-    return `
-      <article class="archive-result-card">
-        <div class="archive-result-image">
-          ${image}
-        </div>
-
-        <div class="archive-result-content">
-          <h3>${safeTitle}</h3>
-          <div class="archive-result-details">
-            ${getArchiveDetails(category, item)}
-          </div>
-        </div>
-      </article>
-    `;
-  }
-
-  // ==========================================
-  // MENAMPILKAN HASIL ARSIP
-  // ==========================================
-
-  function displayArchiveResults(category, data) {
-    if (!modalDescription) return;
-
-    if (!data || data.length === 0) {
-      showEmpty();
-      return;
-    }
-
-    const resultsHTML = data
-      .map((item) => createArchiveCard(category, item))
-      .join("");
-
-    modalDescription.innerHTML = `
-      <div class="archive-results">
-        <p class="archive-result-count">
-          Ditemukan ${data.length} data arsip
-        </p>
-
-        <div class="archive-results-grid">
-          ${resultsHTML}
-        </div>
-      </div>
-    `;
-  }
-
-  // ==========================================
-  // MENGAMBIL DATA DARI SUPABASE
-  // ==========================================
-
-  async function fetchArchive(category) {
-    const config = archiveConfig[category];
-
-    if (!config) {
-      showError("Kategori arsip tidak ditemukan.");
-      return;
-    }
-
-    showLoading();
-
-    try {
-      const { data, error } = await supabase
-        .from(config.table)
-        .select(config.fields.join(","))
-        .order(config.orderBy, {
-          ascending: config.ascending
+    if (type === 'sejarah') {
+        title.innerText = '📜 Sejarah & Timematch MotoGP';
+        
+        Object.keys(databaseSejarahLengkap).forEach(tahun => {
+            let item = databaseSejarahLengkap[tahun];
+            container.innerHTML += `
+                <div class="card card-interactive" onclick="bukaDetailSejarah('${tahun}')">
+                    <img src="${item.fotoMotor}" alt="${item.judul}">
+                    <h3>${item.judul.split('(')[0]} <span class="badge">Era ${tahun}</span></h3>
+                    <p><strong>Lokasi:</strong> ${item.sirkuit}</p>
+                    <p>Klik untuk membaca ulasan resmi lengkap dari awal hingga akhir...</p>
+                    <button class="btn-read-more">📖 Baca Sejarah Lengkap & Pembalap →</button>
+                </div>
+            `;
         });
 
-      if (error) {
-        throw error;
-      }
+    } else if (type === 'motor-riders') {
+        title.innerText = '🏍️ Jenis Motor & Legenda Riders';
+        Object.keys(databaseSejarahLengkap).forEach(tahun => {
+            let item = databaseSejarahLengkap[tahun];
+            container.innerHTML += `
+                <div class="card">
+                    <img src="${item.fotoMotor}" alt="${item.judul}">
+                    <h3>Motor Era ${tahun} <span class="badge">${tahun}</span></h3>
+                    <p><strong>Pembalap Utama:</strong> ${item.pembalap}</p>
+                    <p>${item.spek}</p>
+                </div>
+            `;
+        });
 
-      displayArchiveResults(category, data);
-    } catch (error) {
-      console.error("Kesalahan mengambil data:", error);
-      showError(error.message || "Terjadi kesalahan koneksi.");
+    } else if (type === 'sirkuit') {
+        title.innerText = '🏁 Sirkuit Utama & Sering Digunakan';
+        Object.keys(databaseSejarahLengkap).forEach(tahun => {
+            let item = databaseSejarahLengkap[tahun];
+            container.innerHTML += `
+                <div class="card">
+                    <img src="${item.fotoSirkuit}" alt="${item.sirkuit}">
+                    <h3>${item.sirkuit} <span class="badge">Era ${tahun}</span></h3>
+                    <p>Sirkuit ikonik yang menjadi panggung sejarah era ${tahun}.</p>
+                </div>
+            `;
+        });
     }
-  }
+}
 
-  // ==========================================
-  // TOMBOL KATEGORI ARSIP
-  // ==========================================
+// Fungsi Memunculkan Pop-up Detail Lengkap dengan Penjelasan Terstruktur
+function bukaDetailSejarah(tahun) {
+    let item = databaseSejarahLengkap[tahun];
+    if (!item) return;
 
-  function setupArchiveButtons() {
-    const buttons = document.querySelectorAll("[data-category]");
-
-    buttons.forEach((button) => {
-      button.addEventListener("click", async () => {
-        const category = button.dataset.category;
-        const config = archiveConfig[category];
-
-        if (!config) {
-          console.error("Kategori tidak dikenali:", category);
-          return;
-        }
-
-        if (modalTitle) {
-          modalTitle.textContent = config.title;
-        }
-
-        if (modalDescription) {
-          modalDescription.textContent = config.description;
-        }
-
-        openModal();
-        await fetchArchive(category);
-      });
-    });
-  }
-
-  // ==========================================
-  // PEMERIKSAAN KONEKSI SUPABASE
-  // ==========================================
-
-  async function testConnection() {
-    try {
-      const { error } = await supabase
-        .from("motogp_history")
-        .select("id")
-        .limit(1);
-
-      if (error) {
-        throw error;
-      }
-
-      console.log("MotoGP Heritage: koneksi Supabase berhasil.");
-    } catch (error) {
-      console.error("Koneksi Supabase bermasalah:", error.message);
+    let modal = document.getElementById('modal-sejarah');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'modal-sejarah';
+        modal.className = 'modal-overlay';
+        document.body.appendChild(modal);
     }
-  }
 
-  // ==========================================
-  // MENJALANKAN WEBSITE
-  // ==========================================
+    modal.innerHTML = `
+        <div class="modal-box">
+            <button class="modal-close" onclick="tutupDetailSejarah()">✕</button>
+            <div class="modal-header-tag">ARSIP DOKUMEN RESMI MOTOGP™</div>
+            <h2>${item.judul}</h2>
+            <p class="modal-sirkuit">📍 <strong>Sirkuit Utama:</strong> ${item.sirkuit}</p>
+            <div class="modal-spek-box">⚙️ <strong>Spesifikasi:</strong> ${item.spek}</div>
 
-  function initializeApp() {
-    setupNavigation();
-    setupModal();
-    setupArchiveButtons();
-    testConnection();
+            <!-- Galeri Foto Motor & Pembalap -->
+            <div class="modal-gallery">
+                <div class="gallery-item">
+                    <img src="${item.fotoMotor}" alt="Motor">
+                    <span>🏍️ Motor Era ${tahun}</span>
+                </div>
+                <div class="gallery-item">
+                    <img src="${item.fotoPembalap}" alt="Pembalap">
+                    <span>👤 Pembalap Bintang: ${item.pembalap}</span>
+                </div>
+            </div>
 
-    console.log("MotoGP Heritage berhasil dijalankan.");
-  }
+            <!-- Penjelasan Lengkap Terstruktur -->
+            <div class="modal-body-text">
+                <h3>Ulasan Lengkap & Kronologi:</h3>
+                <div class="history-content-box">
+                    ${item.poinHtml}
+                </div>
+            </div>
+        </div>
+    `;
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initializeApp);
-  } else {
-    initializeApp();
-  }
-})();
+    modal.style.display = 'flex';
+}
+
+function tutupDetailSejarah() {
+    const modal = document.getElementById('modal-sejarah');
+    if (modal) modal.style.display = 'none';
+}
