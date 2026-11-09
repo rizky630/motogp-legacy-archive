@@ -5,27 +5,27 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <meta name="description" content="MotoGP Heritage - arsip digital sejarah, pembalap legenda, motor, teknologi, dan sirkuit MotoGP.">
+  <meta name="description" content="MotoGP Heritage - arsip digital sejarah, pembalap legendaris, motor, teknologi, dan sirkuit MotoGP.">
+  <meta name="theme-color" content="#090909">
 
-  <title>MotoGP Heritage</title>
+  <title>MotoGP Heritage | Arsip Sejarah Balap Motor</title>
 
+  <!-- GOOGLE FONTS -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
+  <!-- CSS UTAMA -->
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-  <!-- ======================================
-       NAVIGASI UTAMA
-  ======================================= -->
-
+  <!-- NAVIGASI -->
   <header class="navbar">
 
-    <a class="brand" href="#home">
+    <a class="brand" href="#home" aria-label="MotoGP Heritage Beranda">
       <span class="brand-mark">M</span>
       <span>MOTOGP <b>HERITAGE</b></span>
     </a>
@@ -33,7 +33,10 @@
     <button
       class="menu-toggle"
       id="menuToggle"
+      type="button"
       aria-label="Buka navigasi"
+      aria-controls="navLinks"
+      aria-expanded="false"
     >
       ☰
     </button>
@@ -52,13 +55,9 @@
 
   </header>
 
-
   <main>
 
-    <!-- ======================================
-         BERANDA / HERO
-    ======================================= -->
-
+    <!-- BERANDA -->
     <section class="hero" id="home">
 
       <div class="hero-shade"></div>
@@ -111,11 +110,7 @@
 
     </section>
 
-
-    <!-- ======================================
-         STATISTIK
-    ======================================= -->
-
+    <!-- STATISTIK -->
     <section class="stats">
 
       <div class="stat">
@@ -140,11 +135,7 @@
 
     </section>
 
-
-    <!-- ======================================
-         KOLEKSI ARSIP
-    ======================================= -->
-
+    <!-- KOLEKSI ARSIP -->
     <section class="section archives" id="archives">
 
       <div class="section-heading">
@@ -167,25 +158,22 @@
 
       </div>
 
-
       <div class="archive-grid">
 
         <!-- SEJARAH -->
-
         <article class="archive-card">
 
           <img
             src="https://images.unsplash.com/photo-1558981806-ec527fa84c39?auto=format&fit=crop&w=1200&q=85"
             alt="Sepeda motor klasik"
+            loading="lazy"
           >
 
           <div class="card-shade"></div>
 
           <div class="card-content">
 
-            <span class="card-label">
-              01 / SEJARAH
-            </span>
+            <span class="card-label">01 / SEJARAH</span>
 
             <h3>SEJARAH MOTOGP</h3>
 
@@ -194,7 +182,7 @@
               sejak tahun 1949 hingga era modern.
             </p>
 
-            <button data-category="history">
+            <button type="button" data-category="history">
               JELAJAHI LEBIH LANJUT
               <span>↗</span>
             </button>
@@ -203,23 +191,20 @@
 
         </article>
 
-
         <!-- MOTOR DAN TEKNOLOGI -->
-
         <article class="archive-card">
 
           <img
             src="https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=1200&q=85"
             alt="Motor dan teknologi"
+            loading="lazy"
           >
 
           <div class="card-shade"></div>
 
           <div class="card-content">
 
-            <span class="card-label">
-              02 / TEKNOLOGI
-            </span>
+            <span class="card-label">02 / TEKNOLOGI</span>
 
             <h3>MOTOR & TEKNOLOGI</h3>
 
@@ -228,7 +213,7 @@
               dan teknologi motor balap.
             </p>
 
-            <button data-category="technology">
+            <button type="button" data-category="technology">
               JELAJAHI LEBIH LANJUT
               <span>↗</span>
             </button>
@@ -237,23 +222,20 @@
 
         </article>
 
-
         <!-- PEMBALAP LEGENDA -->
-
         <article class="archive-card">
 
           <img
             src="https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&w=1200&q=85"
             alt="Dunia sepeda motor"
+            loading="lazy"
           >
 
           <div class="card-shade"></div>
 
           <div class="card-content">
 
-            <span class="card-label">
-              03 / PEMBALAP
-            </span>
+            <span class="card-label">03 / PEMBALAP</span>
 
             <h3>PEMBALAP LEGENDA</h3>
 
@@ -262,7 +244,7 @@
               yang meninggalkan jejak sejarah.
             </p>
 
-            <button data-category="riders">
+            <button type="button" data-category="riders">
               JELAJAHI LEBIH LANJUT
               <span>↗</span>
             </button>
@@ -271,23 +253,20 @@
 
         </article>
 
-
         <!-- SIRKUIT DUNIA -->
-
         <article class="archive-card">
 
           <img
             src="https://images.unsplash.com/photo-1519608487953-e999c86e7455?auto=format&fit=crop&w=1200&q=85"
             alt="Pemandangan lintasan"
+            loading="lazy"
           >
 
           <div class="card-shade"></div>
 
           <div class="card-content">
 
-            <span class="card-label">
-              04 / SIRKUIT
-            </span>
+            <span class="card-label">04 / SIRKUIT</span>
 
             <h3>SIRKUIT DUNIA</h3>
 
@@ -296,7 +275,7 @@
               sejarah balap motor tercipta.
             </p>
 
-            <button data-category="circuits">
+            <button type="button" data-category="circuits">
               JELAJAHI LEBIH LANJUT
               <span>↗</span>
             </button>
@@ -309,11 +288,7 @@
 
     </section>
 
-
-    <!-- ======================================
-         BAGIAN SEJARAH
-    ======================================= -->
-
+    <!-- SEJARAH -->
     <section class="timeline-section" id="timeline">
 
       <div class="timeline-image"></div>
@@ -344,19 +319,13 @@
 
     </section>
 
-
-    <!-- ======================================
-         PEMUTAR MUSIK
-    ======================================= -->
-
+    <!-- MUSIK -->
     <section class="section music-section" id="music">
 
       <div class="section-heading">
 
         <div>
-          <p class="eyebrow">
-            MUSIK PENGIRING
-          </p>
+          <p class="eyebrow">MUSIK PENGIRING</p>
 
           <h2>
             RACING <em>ATMOSPHERE.</em>
@@ -370,7 +339,6 @@
 
       </div>
 
-
       <div class="music-player">
 
         <div class="music-info">
@@ -381,12 +349,9 @@
 
           <h3>HEART OF COURAGE</h3>
 
-          <p>
-            Two Steps From Hell
-          </p>
+          <p>Two Steps From Hell</p>
 
         </div>
-
 
         <div class="music-controls">
 
@@ -411,11 +376,7 @@
 
     </section>
 
-
-    <!-- ======================================
-         TENTANG WEBSITE
-    ======================================= -->
-
+    <!-- TENTANG -->
     <section class="about section" id="about">
 
       <p class="eyebrow">
@@ -438,11 +399,7 @@
 
   </main>
 
-
-  <!-- ======================================
-       FOOTER
-  ======================================= -->
-
+  <!-- FOOTER -->
   <footer class="footer">
 
     <a class="brand" href="#home">
@@ -461,12 +418,12 @@
 
   </footer>
 
-
-  <!-- ======================================
-       MODAL ARSIP SUPABASE
-  ======================================= -->
-
-  <div class="modal" id="categoryModal" aria-hidden="true">
+  <!-- MODAL ARSIP -->
+  <div
+    class="modal"
+    id="categoryModal"
+    aria-hidden="true"
+  >
 
     <div
       class="modal-panel"
@@ -478,6 +435,7 @@
       <button
         class="modal-close"
         id="modalClose"
+        type="button"
         aria-label="Tutup"
       >
         ×
@@ -496,6 +454,7 @@
       <button
         class="button button-red"
         id="modalOkay"
+        type="button"
       >
         TUTUP
       </button>
@@ -504,13 +463,10 @@
 
   </div>
 
-
-  <!-- ======================================
-       SUPABASE DAN JAVASCRIPT
-  ======================================= -->
-
+  <!-- SUPABASE -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+  <!-- JAVASCRIPT UTAMA -->
   <script src="script.js"></script>
 
 </body>
